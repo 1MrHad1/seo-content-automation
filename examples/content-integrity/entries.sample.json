@@ -1,0 +1,26 @@
+[
+  {
+    "slug": "ethereum",
+    "title": "Ethereum",
+    "aliases": ["ETH"],
+    "body": "Ethereum is a decentralised blockchain with smart contract functionality. Ether, or ETH, is the native cryptocurrency of the platform. Ethereum was conceived in 2013 and went live in 2015. The Ethereum network moved from proof of work to proof of stake in 2022, an upgrade widely referred to as the Merge. Today Ethereum hosts the majority of decentralised finance activity."
+  },
+  {
+    "slug": "solana",
+    "title": "Solana",
+    "aliases": ["SOL"],
+    "body": "Ethereum is a decentralised blockchain with smart contract functionality. Ether, or ETH, is the native cryptocurrency of the platform. Ethereum was conceived in 2013 and went live in 2015. The Ethereum network moved from proof of work to proof of stake in 2022. Developers continue to build on Ethereum at scale."
+  },
+  {
+    "slug": "cardano",
+    "title": "Cardano",
+    "aliases": ["ADA"],
+    "body": "A proof of stake blockchain platform founded on peer reviewed research. The network is developed in Haskell and its native token trades under a three letter ticker. The project has published a long term roadmap organised into named eras, each delivering a layer of functionality. Cardano is named after Gerolamo Cardano."
+  },
+  {
+    "slug": "polkadot",
+    "title": "Polkadot",
+    "aliases": ["DOT"],
+    "body": "Polkadot is short."
+  }
+]

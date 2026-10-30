@@ -1,0 +1,41 @@
+{
+  "comment": "Candidate models, and what testing actually showed. Kept in the repo so the next person does not repeat the evaluation.",
+  "candidates": [
+    {
+      "provider": "gemini",
+      "model": "gemini-flash-lite-latest",
+      "verdict": "selected",
+      "notes": "Works, high free daily cap, honours responseMimeType so the existing JSON parser is unchanged."
+    },
+    {
+      "provider": "gemini",
+      "model": "gemini-3.6-flash",
+      "verdict": "rejected",
+      "notes": "Works, but the free tier allows 20 requests per day per project per model. Useless for seeding a backlog. Quota is per-model, so switching models gives a fresh bucket."
+    },
+    {
+      "provider": "gemini",
+      "model": "gemini-2.5-flash",
+      "verdict": "rejected",
+      "notes": "HTTP 404 for new keys. Deprecated."
+    },
+    {
+      "provider": "gemini",
+      "model": "gemini-2.5-flash-lite",
+      "verdict": "rejected",
+      "notes": "HTTP 404 for new keys. Deprecated."
+    },
+    {
+      "provider": "gemini",
+      "model": "gemma-4-*",
+      "verdict": "rejected",
+      "notes": "Responds, but silently ignores responseMimeType. No clean JSON, so every call site would need a tolerant parser."
+    },
+    {
+      "provider": "anthropic",
+      "model": "claude-sonnet-5",
+      "verdict": "fallback",
+      "notes": "Original primary. Returns a thinking block before the text block, so content[0] is the wrong thing to read. Kept in the chain."
+    }
+  ]
+}

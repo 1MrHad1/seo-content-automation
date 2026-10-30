@@ -1,0 +1,26 @@
+{
+  "task": "relevance-gate-and-classify",
+  "system": "You are a newsroom desk editor. Given an article, decide whether it belongs on a site covering AI policy and crypto markets. Reply with JSON only: {\"relevant\": boolean, \"category\": string|null, \"reason\": string}. Category must be one of: ai-regulation, ai-safety, crypto-regulation, crypto-markets. If not relevant, category is null.",
+  "cases": [
+    {
+      "id": "on-topic-crypto",
+      "user": "Headline: SEC approves two spot ether ETFs. Body: The regulator cleared applications from two asset managers on Tuesday, opening the door to retail exposure.",
+      "expect": { "relevant": true, "category": "crypto-regulation" }
+    },
+    {
+      "id": "on-topic-ai",
+      "user": "Headline: EU AI Act enforcement body names first director. Body: The new office will supervise general purpose model obligations from next year.",
+      "expect": { "relevant": true, "category": "ai-regulation" }
+    },
+    {
+      "id": "off-topic-leak",
+      "user": "Headline: Council approves new cycle lane funding. Body: The transport committee voted to allocate budget to three new routes in the city centre.",
+      "expect": { "relevant": false, "category": null }
+    },
+    {
+      "id": "near-miss-general-security",
+      "user": "Headline: Ransomware group targets regional hospitals. Body: Attackers encrypted scheduling systems at four sites over the weekend.",
+      "expect": { "relevant": false, "category": null }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Tests
+        run: npm test
+      - name: Model evaluation (offline)
+        run: npm run evaluate
+      - name: Content integrity gate
+        # Exits non-zero by design: the sample set contains a known mismatch.
+        run: npm run integrity || echo "gate correctly blocked a bad entry"
+      - name: Fleet config has no literal secrets
+        run: |
+          node examples/mcp-fleet/generate.mjs examples/mcp-fleet/sites.example.json > /tmp/fleet.json
+          if grep -nE '"(WP_API_PASSWORD|SHOPIFY_ACCESS_TOKEN)":\s*"[^$]' /tmp/fleet.json; then
+            echo "literal credential found in generated config"; exit 1
+          fi
+          echo "no literal credentials"

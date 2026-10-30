@@ -1,0 +1,6 @@
+node_modules/
+.env
+.env.*
+.mcp.json
+*.local.json
+.DS_Store

@@ -1,0 +1,14 @@
+{
+  "name": "seo-content-automation",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Engineering case studies and runnable examples from building automated content pipelines across WordPress and Shopify fleets.",
+  "scripts": {
+    "test": "node --test examples/**/*.test.mjs",
+    "evaluate": "node examples/model-router/evaluate.mjs",
+    "integrity": "node examples/content-integrity/check.mjs examples/content-integrity/entries.sample.json",
+    "fleet": "node examples/mcp-fleet/generate.mjs examples/mcp-fleet/sites.example.json"
+  },
+  "engines": { "node": ">=20" }
+}

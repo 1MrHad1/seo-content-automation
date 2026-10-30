@@ -1,0 +1,7 @@
+[
+  { "platform": "wordpress", "host": "example-news-one.test" },
+  { "platform": "wordpress", "host": "example-news-two.test" },
+  { "platform": "wordpress", "host": "example-review-site.test" },
+  { "platform": "shopify",  "host": "example-store.myshopify.com", "name": "apparel" },
+  { "platform": "shopify",  "host": "example-foods.myshopify.com", "name": "foods" }
+]
