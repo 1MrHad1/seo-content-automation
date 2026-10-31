@@ -64,6 +64,34 @@ search engines immediately, nothing 404s, and entries rejoin the index one at a
 time as they are rewritten. The audit re-runs after every new batch, so the
 count only goes down.
 
+## What it got wrong on a different content shape
+
+The first version took the subject straight from the title, which is correct for
+a reference entry called "Ethereum" and wrong for an article called "Why planned
+maintenance costs less than reactive repair". Matching a whole sentence against
+a body finds nothing, so every healthy article was flagged.
+
+Entries can now declare a `subject` while the title stays for display. Guessing
+the noun phrase out of a title is the kind of cleverness that fails silently, so
+it is asked for instead.
+
+Running it over a fresh set of twenty service and blog entries then produced
+three useful results in a row:
+
+- Most entries failed at first because the copy **never named its own topic**.
+  That is not a gate problem. Vague copy that will not commit to naming its
+  subject is both what the check rejects and what a reader recognises as
+  generated. The fix went into the assembler, which now guarantees the subject
+  appears in the opening sentence.
+- Two entries still failed, and both were genuine: one blog post mentioned
+  another post's subject as often as its own, and a second was mostly about a
+  topic that already had its own page. That is topical cannibalisation, found
+  automatically, before publish.
+- The copy was tightened and all twenty passed.
+
+A check that only ever confirms what you already believe is not doing anything.
+This one twice told me my content was wrong, and it was right both times.
+
 ## The general lesson
 
 Structural validation tells you a page is well formed. It cannot tell you the

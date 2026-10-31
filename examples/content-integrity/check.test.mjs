@@ -65,3 +65,31 @@ test('counts across a set and reports a rate', () => {
   assert.equal(report.total, 2);
   assert.equal(report.counts.mismatch, 1);
 });
+
+// --- sentence titles, where the subject is not the title --------------------
+
+test('an article whose title is a sentence passes when it declares its subject', () => {
+  const r = checkEntry({
+    title: 'Why planned maintenance costs less than reactive repair',
+    subject: 'planned maintenance',
+    body: body('Planned maintenance moves spend into a forecastable line. Planned maintenance ' +
+               'also prevents the secondary damage a failure causes. Planned maintenance is cheaper per year.'),
+  }, [{ title: 'Reactive repairs', subject: 'reactive repair' }]);
+  assert.equal(r.status, 'ok');
+});
+
+test('the same article is still caught when its body is about something else', () => {
+  const r = checkEntry({
+    title: 'Why planned maintenance costs less than reactive repair',
+    subject: 'planned maintenance',
+    body: body('Base load is what a building draws overnight. Base load above the minimum is ' +
+               'equipment left running. Base load is the cheapest saving in any building.'),
+  }, [{ title: 'Base load', subject: 'base load' }]);
+  assert.equal(r.status, 'mismatch');
+});
+
+test('entries without a subject still fall back to the title', () => {
+  const r = checkEntry({ title: 'Ethereum', body: body('Ethereum is a blockchain. Ethereum uses ETH.') },
+                       [{ title: 'Ethereum' }]);
+  assert.equal(r.status, 'ok');
+});

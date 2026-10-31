@@ -13,6 +13,13 @@
  * vocabulary. That is it. No model call, no embedding, runs over hundreds of
  * entries in a second, and it is deterministic enough to put in CI.
  *
+ * On `subject`: for a reference entry the title *is* the subject, so the title
+ * is used. For an article the title is usually a sentence, and matching a whole
+ * sentence against the body finds nothing, which would flag every healthy
+ * entry. Those entries declare `subject` explicitly, and the title stays for
+ * display. Guessing the noun phrase out of a title is the kind of cleverness
+ * that fails silently, so it is asked for instead.
+ *
  *   node check.mjs entries.json
  *   node check.mjs entries.json --json
  */
@@ -23,18 +30,20 @@ const ALIAS_SPLIT = /\s*[\/|,]\s*/;
 
 export function checkEntry(entry, vocabulary) {
   const title = (entry.title ?? '').trim();
+  const subject = (entry.subject ?? title).trim();
   const body = (entry.body ?? '');
   const haystack = body.toLowerCase();
 
-  const own = subjectTerms(title, entry.aliases);
+  const own = subjectTerms(subject, entry.aliases);
   const ownHits = countAll(haystack, own);
 
   // Which other known subjects show up in this body?
   const rivals = [];
-  for (const subject of vocabulary) {
-    if (sameSubject(subject.title, title)) continue;
-    const hits = countAll(haystack, subjectTerms(subject.title, subject.aliases));
-    if (hits > 0) rivals.push({ title: subject.title, hits });
+  for (const other of vocabulary) {
+    const otherSubject = (other.subject ?? other.title ?? '').trim();
+    if (sameSubject(otherSubject, subject)) continue;
+    const hits = countAll(haystack, subjectTerms(otherSubject, other.aliases));
+    if (hits > 0) rivals.push({ title: other.title ?? otherSubject, hits });
   }
   rivals.sort((a, b) => b.hits - a.hits);
   const topRival = rivals[0] ?? null;
@@ -67,11 +76,11 @@ export function checkEntry(entry, vocabulary) {
     reasons.push('body is very short');
   }
 
-  return { slug: entry.slug ?? slugify(title), title, status, ownHits, topRival, reasons };
+  return { slug: entry.slug ?? slugify(title), title, subject, status, ownHits, topRival, reasons };
 }
 
 export function checkAll(entries) {
-  const vocabulary = entries.map((e) => ({ title: e.title, aliases: e.aliases }));
+  const vocabulary = entries.map((e) => ({ title: e.title, subject: e.subject, aliases: e.aliases }));
   const results = entries.map((entry) => checkEntry(entry, vocabulary));
   const counts = results.reduce(
     (acc, r) => ({ ...acc, [r.status]: (acc[r.status] ?? 0) + 1 }),
