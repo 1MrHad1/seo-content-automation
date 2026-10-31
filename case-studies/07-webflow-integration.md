@@ -64,6 +64,56 @@ tool that throws returns `isError` on the **result**, not a JSON-RPC error. The
 call reached the server and was handled correctly. It was the work that failed,
 and the model needs to be able to read why and try something else.
 
+## What running it against a real site taught me
+
+None of this is in the quickstart. Every one cost time.
+
+**`published-on` is a reserved slug.** Declaring it on collection create does
+not error. The field is **silently dropped**, and you get a collection with one
+fewer field than you asked for.
+
+**The single-field endpoint does not accept a slug.** It derives one from the
+display name and appends a suffix on collision, so asking for `published-on` a
+second way produced `published-on-2`. That also meant my reconcile compared
+slugs, never found the field it asked for, and would have re-created it on
+every run forever. Reconcile now matches display name as well as slug.
+
+**Item publish fails on a site that has never been published.**
+`409 Conflict: The site is not published.` The site needs one publish before
+item-level publishing works at all.
+
+**"Unchanged" is about content, not about being live.** A run that created
+items and then failed before the publish step leaves items that compare as
+identical on the next run and are therefore skipped, forever unpublished. An
+item with no `lastPublished` now gets published even when its content has not
+changed.
+
+**A regenerated timestamp destroys idempotency.** Setting a publish date to
+`new Date()` on every run makes the diff always differ, so every item updates
+every time. A publish date belongs to the item, not to the run. There is now a
+write-once field set, and two consecutive runs are provably clean.
+
+**Page settings are a PUT to `/pages/:id`, not a PATCH**, and PATCH returns
+route-not-found rather than method-not-allowed, which is a confusing way to
+learn the difference. It needs `pages:write`, which a token created for CMS
+work alone will not have.
+
+## Where the Data API stops
+
+Worth stating plainly, because it is the thing people assume wrongly: **the
+Webflow Data API is a content and metadata API, not a page builder.**
+
+- Collections, fields, items, publishing: yes.
+- Page title, description and OpenGraph: yes.
+- Creating a page: no. `POST /sites/:id/pages` returns 404.
+- Creating elements or layout: no. The page DOM endpoint updates text in nodes
+  that already exist, so on a blank page, where `nodes` is `[]`, there is
+  nothing to write to.
+
+So a site can be fully populated and fully optimised from code, and still need
+a designer to lay out the template once. Knowing exactly where that line falls
+is more useful than assuming it is further in either direction.
+
 ## Honest scope
 
 This is a working integration with tests, not years of Webflow experience. What

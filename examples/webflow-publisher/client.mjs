@@ -92,6 +92,22 @@ export function createClient({ token, fetchImpl = fetch, maxRetries = 4, onBudge
     /** Returns { publishedItemIds, errors }. Item-level publish avoids the one-per-minute site publish limit. */
     publishItems: (collectionId, itemIds) =>
       request('POST', `/collections/${collectionId}/items/publish`, { itemIds }),
+
+    listPages: (siteId) => request('GET', `/sites/${siteId}/pages`),
+
+    /**
+     * Page title, description and OpenGraph. Note the verb: this is a PUT to
+     * /pages/:id, not a PATCH, and PATCH returns a route-not-found rather than
+     * a method-not-allowed, which is a confusing way to learn the difference.
+     * Needs the pages:write scope, which a token created for CMS work alone
+     * will not have.
+     */
+    updatePage: (pageId, body) => request('PUT', `/pages/${pageId}`, body),
+
+    /** Item-level publish needs the site to have been published at least once. */
+    publishSite: (siteId, { toWebflowSubdomain = true, customDomains = [] } = {}) =>
+      request('POST', `/sites/${siteId}/publish`,
+        customDomains.length ? { customDomains } : { publishToWebflowSubdomain: toWebflowSubdomain }),
   };
 }
 

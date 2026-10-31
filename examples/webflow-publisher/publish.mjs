@@ -56,7 +56,10 @@ export function planChanges(incoming, existingItems) {
 
 export async function run({ client, collectionId, incoming, dryRun = false, log = console.error }) {
   // ---- gate first ---------------------------------------------------------
-  const gate = checkAll(incoming.map((e) => ({ title: e.title, slug: e.slug, body: e.body ?? '' })));
+  // `subject` is passed through when present: for an article the title is a
+  // sentence, and the gate needs the actual subject to match against.
+  const gate = checkAll(incoming.map((e) =>
+    ({ title: e.title, subject: e.subject, slug: e.slug, body: e.body ?? '' })));
   const blocked = gate.results.filter((r) => r.status === 'mismatch').map((r) => r.slug);
 
   if (blocked.length > 0) {

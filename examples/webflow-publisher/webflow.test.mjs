@@ -217,3 +217,39 @@ test('a failing tool call returns isError, not a protocol error', async () => {
   assert.equal(r.error, undefined, 'a tool failure is a result, not a transport error');
   if (saved) process.env.WEBFLOW_TOKEN = saved;
 });
+
+// --- pages and site publish -------------------------------------------------
+
+test('page SEO uses PUT on /pages/:id, which is the documented verb', async () => {
+  const calls = [];
+  const impl = async (url, opts) => {
+    calls.push(`${opts.method} ${url.replace('https://api.webflow.com/v2', '')}`);
+    return { status: 200, ok: true, headers: { get: () => null },
+             text: async () => JSON.stringify({ seo: { title: 'T' } }) };
+  };
+  const client = createClient({ token: 'test-token', fetchImpl: impl });
+  await client.updatePage('p1', { seo: { title: 'T', description: 'D' } });
+  assert.deepEqual(calls, ['PUT /pages/p1']);
+});
+
+test('site publish defaults to the webflow subdomain', async () => {
+  let sent = null;
+  const impl = async (url, opts) => {
+    sent = JSON.parse(opts.body);
+    return { status: 202, ok: true, headers: { get: () => null }, text: async () => '{}' };
+  };
+  const client = createClient({ token: 'test-token', fetchImpl: impl });
+  await client.publishSite('s1');
+  assert.deepEqual(sent, { publishToWebflowSubdomain: true });
+});
+
+test('site publish uses custom domains when given', async () => {
+  let sent = null;
+  const impl = async (url, opts) => {
+    sent = JSON.parse(opts.body);
+    return { status: 202, ok: true, headers: { get: () => null }, text: async () => '{}' };
+  };
+  const client = createClient({ token: 'test-token', fetchImpl: impl });
+  await client.publishSite('s1', { customDomains: ['d1'] });
+  assert.deepEqual(sent, { customDomains: ['d1'] });
+});
