@@ -8,7 +8,10 @@
     "test": "node --test examples/**/*.test.mjs",
     "evaluate": "node examples/model-router/evaluate.mjs",
     "integrity": "node examples/content-integrity/check.mjs examples/content-integrity/entries.sample.json",
-    "fleet": "node examples/mcp-fleet/generate.mjs examples/mcp-fleet/sites.example.json"
+    "fleet": "node examples/mcp-fleet/generate.mjs examples/mcp-fleet/sites.example.json",
+    "webflow": "node examples/webflow-publisher/publish.mjs examples/webflow-publisher/content.sample.json --dry"
   },
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=20"
+  }
 }

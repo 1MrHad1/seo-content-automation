@@ -1,0 +1,17 @@
+[
+  {
+    "slug": "automated-publishing",
+    "title": "Automated publishing",
+    "body": "Automated publishing means a system that ingests a source, decides what belongs, rewrites it, and puts it live on its own schedule. Automated publishing only works when the pipeline is allowed to reject an item rather than file it into the closest matching category."
+  },
+  {
+    "slug": "content-integrity",
+    "title": "Content integrity",
+    "body": "Content integrity is the property that an entry is actually about what its title says. Structural validation cannot see a failure of content integrity, because a page with the wrong body still returns 200 and still has a title, a body and valid schema."
+  },
+  {
+    "slug": "broken-entry",
+    "title": "Model evaluation",
+    "body": "Content integrity is the property that an entry is about what its title says. Content integrity checks compare a subject against its body. Content integrity failures are invisible to structural validation, which is why content integrity needs its own gate."
+  }
+]

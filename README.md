@@ -10,10 +10,11 @@ here is the architecture, the decisions, the failure modes, and working code you
 can run in about ten seconds.
 
 ```bash
-npm test          # 20 tests, zero dependencies
+npm test          # 37 tests, zero dependencies
 npm run evaluate  # score candidate models against fixtures, offline
 npm run integrity # find entries whose body is about the wrong subject
 npm run fleet     # generate a 100-site MCP config with no secrets in it
+npm run webflow   # plan a Webflow CMS publish, gated, dry run
 ```
 
 ---
@@ -27,8 +28,8 @@ npm run fleet     # generate a 100-site MCP config with no secrets in it
         |                         |                          |
    content fleet            commerce fleet              data sources
    93 WordPress sites       8 Shopify stores            Search Console
-   over MCP                 over Admin GraphQL          GA4
-                                                        DataForSEO
+   Webflow over Data API    over Admin GraphQL          GA4
+   all over MCP                                         DataForSEO
                                                         Hostinger / Netlify / Vercel
 
         ingest  ->  relevance gate  ->  rewrite  ->  illustrate  ->  QA gate  ->  publish
@@ -55,6 +56,7 @@ rather than forty tabs.
 | [4. Commerce automation](case-studies/04-commerce-automation.md) | Shopify stores wired over the Admin API: catalogue work, product and meta copy, and the draft-theme rule that keeps client storefronts safe. |
 | [5. Operating a fleet](case-studies/05-fleet-operations.md) | Addressing a hundred sites from one environment, keeping secrets out of config, and QA gates that block a publish rather than report on it afterwards. |
 | [6. Pre-launch footprint audit](case-studies/06-footprint-audit.md) | Measuring what a network of similar sites gives away before any of them are indexed, and what was changed as a result. |
+| [7. Adding a new platform](case-studies/07-webflow-integration.md) | Taking the same discipline to a CMS the fleet had never touched. What transferred, what was new, and the one-character bug a test caught. |
 
 ---
 
@@ -115,6 +117,24 @@ and more often than any competing subject from the same vocabulary. That one
 signal caught a defect rate above thirty percent in a real set. It exits
 non-zero, so it can gate a publish step rather than produce a report nobody
 reads.
+
+### `examples/webflow-publisher`
+
+An idempotent publisher for the Webflow Data API v2, plus an MCP server written
+directly against the protocol rather than with the SDK, so the repository stays
+dependency-free.
+
+Three things it gets right, and they are the same three on every platform:
+
+- **Idempotent by slug.** Existing slug is a `PATCH`, new slug is an insert. A
+  re-run after a crash changes nothing, which is the difference between a
+  pipeline and a cleanup job.
+- **The gate runs before the write.** An entry whose body is about the wrong
+  subject is blocked and never reaches the API, so there is no retraction path
+  to build.
+- **Rate limits are expected, not exceptional.** 429 is retried honouring
+  `Retry-After`, and the remaining budget is surfaced so a batch can pace
+  itself. Webflow allows 60 requests a minute on Starter and Basic.
 
 ### `examples/mcp-fleet`
 

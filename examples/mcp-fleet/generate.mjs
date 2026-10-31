@@ -38,6 +38,11 @@ const BUILDERS = {
       WP_API_PASSWORD: `\${${envVar(site, 'APP_PASSWORD')}}`,
     },
   }),
+  webflow: (site) => ({
+    command: 'node',
+    args: ['./examples/webflow-publisher/mcp-server.mjs'],
+    env: { WEBFLOW_TOKEN: `\${${envVar(site, 'TOKEN')}}` },
+  }),
   shopify: (site) => ({
     command: 'node',
     args: ['./mcp-servers/shopify-admin/dist/index.js'],
@@ -71,6 +76,7 @@ export function requiredEnv(sites) {
   for (const site of sites) {
     if (site.platform === 'wordpress') names.push(envVar(site, 'USER'), envVar(site, 'APP_PASSWORD'));
     if (site.platform === 'shopify') names.push(envVar(site, 'TOKEN'));
+    if (site.platform === 'webflow') names.push(envVar(site, 'TOKEN'));
   }
   return names;
 }
